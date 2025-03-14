@@ -21,4 +21,10 @@ Get의 경우 무조건 리턴 타입이 있어야 한다. (void는 안됨)
 3. 에셋
 - Odin  
 - Dotween.Pro   
-   
+
+4. 깃 규칙  
+develop 브랜치에서 파생해서 각자 개인 브랜치를 만들어서 작업한다.  
+Merge는 무조건 develop 브랜치에 합병한다.  
+develop 브랜치에 올리기 전에 Pull requests를 한 후, 올린다.
+
+main 브랜치는 최종 빌드를 위한 브랜치임으로 버그가 없는 버전만 올라갈 수 있다.

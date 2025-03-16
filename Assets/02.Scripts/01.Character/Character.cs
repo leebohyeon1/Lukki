@@ -2,18 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 /// <summary>
-/// 모든 움직이는 생명체의 부모 오브젝트 ( 플레이어, 적 등등 )
+/// 모든 움직이는 물체의 부모 오브젝트 ( 플레이어, 적 등등 )
 /// </summary>
 public class Character : MonoBehaviour
 {
     protected int _maxHp;           // 최대 체력
     private int _curHp;             // 현재 체력
-
-    protected float _moveSpeed;     // 움직이는 속도
-
-    protected int _attackDamage;    // 캐릭터의 기본 공격 공격력
-
 
     protected void Start()
     {
@@ -24,7 +20,7 @@ public class Character : MonoBehaviour
     /// 클래스를 초기화하는 함수로 
     /// 처음 시작 시에만 호출된다.
     /// </summary>
-    protected void Initialize()
+    protected virtual void Initialize()
     {
         _curHp = _maxHp;
     }
@@ -34,7 +30,7 @@ public class Character : MonoBehaviour
     /// 캐릭터의 체력을 감소한다.
     /// </summary>
     /// <param name="damage">받는 데미지</param>
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         _curHp -= damage;
 
@@ -47,8 +43,8 @@ public class Character : MonoBehaviour
     /// <summary>
     /// 플레이어의 체력이 0보다 낮아지면 호출되면
     /// </summary>
-    protected void Die()
+    protected virtual void Die()
     {
-        Debug.Log($"{gameObject.name}- 죽음");
+        Debug.Log($"{gameObject.name} - 죽음");
     }
 }

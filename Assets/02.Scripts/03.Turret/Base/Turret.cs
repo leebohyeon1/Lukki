@@ -8,6 +8,7 @@ using UnityEngine;
 /// </summary>
 public class Turret : MonoBehaviour
 {
+    [LabelText("터렛 데이터")]
     [SerializeField] private TurretData _turretData; // 스크립터블 오브젝트 참조
   
     protected virtual void Awake()

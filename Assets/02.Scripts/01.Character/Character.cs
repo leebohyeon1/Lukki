@@ -24,7 +24,7 @@ public class Character : MonoBehaviour
     /// 클래스를 초기화하는 함수로 
     /// 처음 시작 시에만 호출된다.
     /// </summary>
-    protected void Initialize()
+    protected virtual void Initialize()
     {
         _curHp = _maxHp;
     }
@@ -47,7 +47,7 @@ public class Character : MonoBehaviour
     /// <summary>
     /// 플레이어의 체력이 0보다 낮아지면 호출되면
     /// </summary>
-    protected void Die()
+    protected virtual void Die()
     {
         Debug.Log($"{gameObject.name}- 죽음");
     }

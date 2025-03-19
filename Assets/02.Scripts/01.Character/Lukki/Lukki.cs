@@ -1,12 +1,12 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Lukki : Enemy
 {
-    [SerializeField] protected float _moveSpeed;
-    [SerializeField] protected int _damage;
+    public static event Action OnLukkiDeath;
 
+    // Start is called before the first frame update
     void Start()
     {
         

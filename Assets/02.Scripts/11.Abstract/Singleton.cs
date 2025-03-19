@@ -4,46 +4,62 @@ using UnityEngine;
 /// 싱글톤 템플릿 클래스
 /// 클래스에 이 코드를 상속시키면 싱글톤 인스턴스가 된다.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">싱글톤 클래스 타입</typeparam>
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T instance;
+    private static  T _instance;
     public static T Instance
     {
         get
         {
             // 이미 존재하면 바로 반환
-            if (instance != null) return instance;
-
-            // 존재하지 않으면 먼저 찾아보고, 없으면 새로 만든다
-            instance = FindObjectOfType<T>();
-            if (instance == null)
+            if (_instance == null)
             {
-                var singletonObject = new GameObject(typeof(T).Name);
-                instance = singletonObject.AddComponent<T>();
+                // 존재하지 않으면 먼저 찾아보고, 없으면 새로 만든다
+                _instance = (T)FindObjectOfType(typeof(T));
+                if (_instance == null)
+                {
+                    SetupInstance();
+                }
             }
-
-            return instance;
+            return _instance;
         }
     }
 
-    // 인스턴스가 존재하는지 확인
-    public static bool HasInstance => instance != null;
-
     protected virtual void Awake()
     {
-        // 싱글톤 중복 방지
-        if (instance == null)
+       
+        RemoveDuplicates();
+    }
+
+    /// <summary>
+    /// 싱글톤 인스턴스를 찾거나 생성하는 함수
+    /// </summary>
+    private static void SetupInstance()
+    {
+        _instance = (T)FindObjectOfType(typeof(T));
+        if (_instance == null)
         {
-            instance = this as T;
+            GameObject gameObj = new GameObject(typeof(T).Name);
+            _instance = gameObj.AddComponent<T>();
+            DontDestroyOnLoad(gameObj);
+        }
+    }
+
+    /// <summary>
+    /// 중복된 싱글톤 오브젝트를 제거하는 함수   
+    /// </summary>
+    private void RemoveDuplicates()
+    {
+        if (_instance == null)
+        {
+            _instance = this as T;
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            if (instance != this)
-            {
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
     }
+
 }

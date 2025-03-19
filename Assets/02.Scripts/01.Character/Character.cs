@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class Character : MonoBehaviour
 {
-    protected int _maxHp;           // 최대 체력
+    [SerializeField] protected CharacterData _data;  // 캐릭터의 데이터
     private int _curHp;             // 현재 체력
 
     protected void Start()
@@ -22,7 +22,7 @@ public class Character : MonoBehaviour
     /// </summary>
     protected virtual void Initialize()
     {
-        _curHp = _maxHp;
+        _curHp = _data.BaseHealth;
     }
 
     /// <summary>

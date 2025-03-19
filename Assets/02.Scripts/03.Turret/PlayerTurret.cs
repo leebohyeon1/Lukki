@@ -27,10 +27,16 @@ public class PlayerTurret : ProjectileLauncher
         RotateTurret();
     }
 
+    protected override void Initialize()
+    {
+        _installedNumber = 0;
+
+        base.Initialize();
+    }
+
     public override void Attack()
     {
         base.Attack();
-
     }
 
     // 터렛을 카메라 방향으로 회전시키는 메서드

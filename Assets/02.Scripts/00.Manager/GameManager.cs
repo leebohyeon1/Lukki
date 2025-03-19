@@ -12,6 +12,8 @@ public class GameManager : Singleton<GameManager>
 {
     public static event Action OnPlayerDeath;   // 다른 클래스에서 플레이어가 죽었을 때 호출할 이벤트
 
+    private EnemyManager _enemyManager; // 적 관리 클래스
+
     protected override void Awake()
     {
         base.Awake();
@@ -25,8 +27,9 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void Initialize()
     {
-
         Player.OnDeath += HandlePlyerDeath;
+
+        OnPlayerDeath += HandlePlyerDeath;
     }
 
     private void StartRound()
@@ -49,7 +52,17 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void NextDay()
     {
+        _enemyManager.IncreaseLukki();
+    }
 
+    public void Win()
+    {
+        Debug.Log("게임 승리"); 
+    }
+
+    public void GameOver()
+    {
+        Debug.Log("게임 오버");
     }
 
 }

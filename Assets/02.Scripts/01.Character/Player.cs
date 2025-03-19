@@ -34,6 +34,5 @@ public class Player : Character
 
         // 플레이어 죽었을 때 이벤트 발생
         OnDeath?.Invoke();
-      
     }
 }

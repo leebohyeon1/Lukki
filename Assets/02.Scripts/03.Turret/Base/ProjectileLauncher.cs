@@ -45,7 +45,7 @@ public class ProjectileLauncher : Turret, IAttackable
         }
 
         // 투사체 풀 초기화
-        _pool.InitializePool(_projectilePrefab);
+        _pool.InitializePool(_installedNumber, _projectilePrefab);
 
         _canAttack = true;
     }
@@ -58,7 +58,7 @@ public class ProjectileLauncher : Turret, IAttackable
     {
         if(_canAttack)
         {
-            GameObject bullet = _pool.GetBullet(_projectilePrefab);
+            GameObject bullet = _pool.GetBullet(_installedNumber);
             bullet.transform.position = _firePoint.position;
             bullet.transform.rotation = _firePoint.rotation;
 

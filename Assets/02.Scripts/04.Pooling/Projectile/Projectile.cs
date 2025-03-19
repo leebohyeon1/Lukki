@@ -9,11 +9,16 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     private BulletPool _pool;
-    private Rigidbody _rigidbody;
-    
+    [SerializeField] private Rigidbody _rigidbody;
+
+    private int _turretInstalledNumber;
+
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>(); 
+        if (_rigidbody == null)
+        {
+            _rigidbody = GetComponent<Rigidbody>();
+        }
     }
 
     void Update()
@@ -29,9 +34,10 @@ public class Projectile : MonoBehaviour
     /// <summary>
     /// 이 오브젝트가 귀속될 풀을 지정하는 메서드
     /// </summary>
-    public void SetPool(BulletPool pool)
+    public void SetPool(BulletPool pool, int installedNumber)
     {
         _pool = pool;
+        _turretInstalledNumber = installedNumber;
     }
 
     protected void ReturnToPool()
@@ -44,9 +50,10 @@ public class Projectile : MonoBehaviour
         else
         {
 
-            _pool.ReturnBullet(gameObject);
+            _pool.ReturnBullet(_turretInstalledNumber, gameObject);
         }
     }
+
     public void SetVelocity(Vector3 direction, float speed)
     {
         _rigidbody.velocity = direction * speed;

@@ -58,4 +58,21 @@ public class Wheel : MonoBehaviour
         _rearLeftWheel.suspensionSpring = spring;
         _rearRightWheel.suspensionSpring = spring;
     }
+
+    public void AdjustFriction()
+    {
+        WheelFrictionCurve forwardFriction = _frontLeftWheel.forwardFriction;
+        forwardFriction.stiffness = 1.8f;
+        _frontLeftWheel.forwardFriction = forwardFriction;
+        _frontRightWheel.forwardFriction = forwardFriction;
+        _rearLeftWheel.forwardFriction = forwardFriction;
+        _rearRightWheel.forwardFriction = forwardFriction;
+
+        WheelFrictionCurve sidewaysFriction = _frontLeftWheel.sidewaysFriction;
+        sidewaysFriction.stiffness = 1.7f; //
+        _frontLeftWheel.sidewaysFriction = sidewaysFriction;
+        _frontRightWheel.sidewaysFriction = sidewaysFriction;
+        _rearLeftWheel.sidewaysFriction = sidewaysFriction;
+        _rearRightWheel.sidewaysFriction = sidewaysFriction;
+    }
 }

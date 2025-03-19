@@ -6,6 +6,7 @@ using UnityEngine;
 /// 오브젝트를 풀링하여 관리하는 클래스
 /// 풀링할 오브젝트를 미리 생성해두고 필요할 때마다 꺼내 사용하고 반환한다.
 /// 원할 경우 여러 오브젝트를 한번에 풀링하도록 만들어도 된다.
+/// 각 풀마다 하나의 오브젝트만 풀링할 수 있다.
 /// </summary>
 public class ObjectPool : MonoBehaviour
 {
@@ -48,7 +49,7 @@ public class ObjectPool : MonoBehaviour
     /// <summary>
     /// 풀에서 오브젝트 하나를 꺼내 활성화 후 반환한다.
     /// </summary>
-    public GameObject GetBullet()
+    public GameObject GetObject()
     {
         // 큐가 비어있지 않다면 꺼내서 사용
         if (_objectPool.Count > 0)

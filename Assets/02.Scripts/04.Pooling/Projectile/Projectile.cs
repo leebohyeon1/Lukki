@@ -6,17 +6,50 @@ using UnityEngine;
 /// 총알의 부모 클래스
 /// 총알은 풀링가능한 오브젝트이기에 PoolingObject를 상속받는다.
 /// </summary>
-public class Projectile : PoolingObject
+public class Projectile : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private BulletPool _pool;
+    private Rigidbody _rigidbody;
+    
+    private void Awake()
     {
-        
+        _rigidbody = GetComponent<Rigidbody>(); 
     }
 
-    // Update is called once per frame
     void Update()
     {
         
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        ReturnToPool();
+    }
+
+    /// <summary>
+    /// 이 오브젝트가 귀속될 풀을 지정하는 메서드
+    /// </summary>
+    public void SetPool(BulletPool pool)
+    {
+        _pool = pool;
+    }
+
+    protected void ReturnToPool()
+    {
+        if (_pool == null)
+        {
+            // 만약 풀 정보가 없다면 그냥 파괴
+            Destroy(gameObject);
+        }
+        else
+        {
+
+            _pool.ReturnBullet(gameObject);
+        }
+    }
+    public void SetVelocity(Vector3 direction, float speed)
+    {
+        _rigidbody.velocity = direction * speed;
+    }
+
 }

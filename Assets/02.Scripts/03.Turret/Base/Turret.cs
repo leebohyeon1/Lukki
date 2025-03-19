@@ -1,6 +1,4 @@
 using Sirenix.OdinInspector;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -8,9 +6,11 @@ using UnityEngine;
 /// </summary>
 public class Turret : MonoBehaviour
 {
+    public TurretData TurretData => _turretData; // 프로퍼티로 변경
     [LabelText("터렛 데이터")]
     [SerializeField] private TurretData _turretData; // 스크립터블 오브젝트 참조
-  
+    
+    
     protected virtual void Awake()
     {
         Initialize();

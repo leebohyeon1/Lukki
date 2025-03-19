@@ -9,18 +9,6 @@ public class PoolingObject : MonoBehaviour
 {
     private ObjectPool _objectPool;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     /// <summary>
     /// 이 오브젝트가 귀속될 풀을 지정하는 메서드
     /// </summary>
@@ -29,7 +17,7 @@ public class PoolingObject : MonoBehaviour
         _objectPool = pool;
     }
 
-    protected virtual void ReturnToPool()
+    protected void ReturnToPool()
     {
         if (_objectPool == null)
         {

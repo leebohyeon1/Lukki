@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class TerrainChunk {
 	
@@ -28,15 +29,24 @@ public class TerrainChunk {
 	MeshSettings meshSettings;
 	Transform viewer;
 
-	public TerrainChunk(Vector2 coord, HeightMapSettings heightMapSettings, MeshSettings meshSettings, LODInfo[] detailLevels, int colliderLODIndex, Transform parent, Transform viewer, Material material) {
+    // 건물 배치용 변수
+    public GameObject buildingPrefab; // 배치할 건물 프리팹
+    private List<GameObject> spawnedBuildings = new List<GameObject>(); // 생성된 건물 목록
+    private bool buildingsPlaced = false;
+    const int maxBuildingsPerChunk = 3; // 청크당 최대 건물 수
+    const float minBuildingDistance = 10f; // 건물 간 최소 거리
+    const float flatnessThreshold = 0.1f; // 평탄도 임계값
+
+    public TerrainChunk(Vector2 coord, HeightMapSettings heightMapSettings, MeshSettings meshSettings, LODInfo[] detailLevels, int colliderLODIndex, Transform parent, Transform viewer, Material material, GameObject buildingPrefab = null) {
 		this.coord = coord;
 		this.detailLevels = detailLevels;
 		this.colliderLODIndex = colliderLODIndex;
 		this.heightMapSettings = heightMapSettings;
 		this.meshSettings = meshSettings;
 		this.viewer = viewer;
+        this.buildingPrefab = buildingPrefab; // 건물 프리팹 설정
 
-		sampleCentre = coord * meshSettings.meshWorldSize / meshSettings.meshScale;
+        sampleCentre = coord * meshSettings.meshWorldSize / meshSettings.meshScale;
 		Vector2 position = coord * meshSettings.meshWorldSize ;
 		bounds = new Bounds(position,Vector2.one * meshSettings.meshWorldSize );
 
@@ -69,15 +79,16 @@ public class TerrainChunk {
 	}
 
 
+    void OnHeightMapReceived(object heightMapObject)
+    {
+        this.heightMap = (HeightMap)heightMapObject;
+        heightMapReceived = true;
 
-	void OnHeightMapReceived(object heightMapObject) {
-		this.heightMap = (HeightMap)heightMapObject;
-		heightMapReceived = true;
+        UpdateTerrainChunk();
+        PlaceBuildings(); // 높이맵 수신 후 건물 배치
+    }
 
-		UpdateTerrainChunk ();
-	}
-
-	Vector2 viewerPosition {
+    Vector2 viewerPosition {
 		get {
 			return new Vector2 (viewer.position.x, viewer.position.z);
 		}
@@ -152,6 +163,102 @@ public class TerrainChunk {
 		return meshObject.activeSelf;
 	}
 
+    void PlaceBuildings()
+    {
+        if (buildingsPlaced || buildingPrefab == null || !heightMapReceived) return;
+
+        // 시드 초기화 (NoiseSettings에서 가져옴)
+        Random.InitState(heightMapSettings.noiseSettings.seed + (int)(coord.x * 1000 + coord.y)); // 좌표별 고유 시드
+
+        List<Vector2> candidates = FindFlatAreas();
+        List<Vector2> buildingPositions = SelectBuildingPositions(candidates);
+        SpawnBuildings(buildingPositions);
+
+        buildingsPlaced = true;
+    }
+
+    List<Vector2> FindFlatAreas()
+    {
+        List<Vector2> candidates = new List<Vector2>();
+        int width = heightMap.values.GetLength(0);
+        int height = heightMap.values.GetLength(1);
+
+        for (int x = 2; x < width - 2; x++)
+        {
+            for (int y = 2; y < height - 2; y++)
+            {
+                if (IsFlatEnough(x, y))
+                {
+                    Vector2 worldPos = new Vector2(
+                        bounds.center.x - meshSettings.meshWorldSize / 2f + (x / (float)(width - 1)) * meshSettings.meshWorldSize,
+                        bounds.center.y - meshSettings.meshWorldSize / 2f + (y / (float)(height - 1)) * meshSettings.meshWorldSize
+                    );
+                    candidates.Add(worldPos);
+                }
+            }
+        }
+        return candidates;
+    }
+
+    bool IsFlatEnough(int x, int y)
+    {
+        float centerHeight = heightMap.values[x, y];
+        for (int i = -2; i <= 2; i++)
+        {
+            for (int j = -2; j <= 2; j++)
+            {
+                if (x + i < 0 || x + i >= heightMap.values.GetLength(0) || y + j < 0 || y + j >= heightMap.values.GetLength(1))
+                    continue;
+                float height = heightMap.values[x + i, y + j];
+                if (Mathf.Abs(height - centerHeight) > flatnessThreshold)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    List<Vector2> SelectBuildingPositions(List<Vector2> candidates)
+    {
+        List<Vector2> positions = new List<Vector2>();
+        for (int i = 0; i < maxBuildingsPerChunk && candidates.Count > 0; i++)
+        {
+            int index = Random.Range(0, candidates.Count);
+            Vector2 pos = candidates[index];
+            if (IsValidPosition(pos, positions))
+            {
+                positions.Add(pos);
+            }
+            candidates.RemoveAt(index);
+        }
+        return positions;
+    }
+
+    bool IsValidPosition(Vector2 newPos, List<Vector2> existingPositions)
+    {
+        foreach (Vector2 pos in existingPositions)
+        {
+            if (Vector2.Distance(newPos, pos) < minBuildingDistance)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void SpawnBuildings(List<Vector2> positions)
+    {
+        foreach (Vector2 pos in positions)
+        {
+            int xIndex = Mathf.RoundToInt((pos.x - (bounds.center.x - meshSettings.meshWorldSize / 2f)) / meshSettings.meshWorldSize * (meshSettings.numVertsPerLine - 1));
+            int yIndex = Mathf.RoundToInt((pos.y - (bounds.center.y - meshSettings.meshWorldSize / 2f)) / meshSettings.meshWorldSize * (meshSettings.numVertsPerLine - 1));
+            float height = heightMap.values[xIndex, yIndex];
+            Vector3 spawnPos = new Vector3(pos.x, height, pos.y);
+            GameObject building = Object.Instantiate(buildingPrefab, spawnPos, Quaternion.identity, meshObject.transform);
+            spawnedBuildings.Add(building);
+        }
+    }
 }
 
 class LODMesh {

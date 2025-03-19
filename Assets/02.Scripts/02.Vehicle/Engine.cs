@@ -50,17 +50,18 @@ public class Engine : MonoBehaviour
             return;
         }
 
-        if (input !=0)
+        if (input != 0)
         {
-            _currentSpeed = Mathf.Lerp(_currentSpeed, _maxTorque * input, Time.fixedDeltaTime * _accelerationSpeed);
+            _currentSpeed = Mathf.Lerp(_currentSpeed, _maxSpeed, Time.fixedDeltaTime * _accelerationSpeed);
         }
-        else
+        else 
         {
             _currentSpeed = Mathf.Lerp(_currentSpeed, 0, Time.fixedDeltaTime * _decelerationSpeed);
         }
+        Debug.Log(_currentSpeed);
         float appliedForce = Mathf.Lerp(0, _maxTorque * input, Time.fixedDeltaTime * _accelerationSpeed);
-        _rb.AddForce(transform.forward * _currentSpeed, ForceMode.Acceleration);
-        Debug.Log($" 가속력 적용: {_currentSpeed} | 현재 속도: {_rb.velocity.magnitude}");
+        _rb.velocity += transform.forward * _currentSpeed * appliedForce;
+       // Debug.Log($" 가속력 적용: {_currentSpeed} | 현재 속도: {_rb.velocity.magnitude}");
     }
     
     public void Brake(bool isBrasking)

@@ -38,6 +38,12 @@ public class Wheel : MonoBehaviour
         _frontRightWheel.steerAngle = steerAngle;
     }
 
+    public void ResetSteering()
+    {
+        _frontLeftWheel.steerAngle = Mathf.Lerp(_frontLeftWheel.steerAngle, 0, Time.fixedDeltaTime * 5f);
+        _frontRightWheel.steerAngle = Mathf.Lerp(_frontRightWheel.steerAngle, 0, Time.fixedDeltaTime * 5f);
+    }
+
     public void AdjustSuspension()
     {
         JointSpring spring = new JointSpring

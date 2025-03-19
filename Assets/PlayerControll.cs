@@ -44,6 +44,42 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Drift"",
+                    ""type"": ""Button"",
+                    ""id"": ""d8fe1095-f8d3-4dad-a638-d63449db6ba0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotation"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""1f053463-f2c8-4ee1-abac-9876b0e039c1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""c34cfd5e-50fe-4bbb-afec-6e91aa745af8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpecialFN"",
+                    ""type"": ""Button"",
+                    ""id"": ""709323bd-f3b6-4d0c-be7c-9ece850a60ad"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -112,6 +148,50 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
                     ""action"": ""Brake"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a010226-72cf-485d-b650-a67ec3b195aa"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""071aed39-b16a-45a6-a3e1-4585acefe7bb"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""98183851-12dc-44b7-bc62-2497edbf520e"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d792b67-4716-4df6-85d9-8c74532761d3"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpecialFN"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -122,6 +202,10 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Brake = m_Player.FindAction("Brake", throwIfNotFound: true);
+        m_Player_Drift = m_Player.FindAction("Drift", throwIfNotFound: true);
+        m_Player_Rotation = m_Player.FindAction("Rotation", throwIfNotFound: true);
+        m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_SpecialFN = m_Player.FindAction("SpecialFN", throwIfNotFound: true);
     }
 
     ~@PlayerControll()
@@ -190,12 +274,20 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Brake;
+    private readonly InputAction m_Player_Drift;
+    private readonly InputAction m_Player_Rotation;
+    private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_SpecialFN;
     public struct PlayerActions
     {
         private @PlayerControll m_Wrapper;
         public PlayerActions(@PlayerControll wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Brake => m_Wrapper.m_Player_Brake;
+        public InputAction @Drift => m_Wrapper.m_Player_Drift;
+        public InputAction @Rotation => m_Wrapper.m_Player_Rotation;
+        public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        public InputAction @SpecialFN => m_Wrapper.m_Player_SpecialFN;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -211,6 +303,18 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
             @Brake.started += instance.OnBrake;
             @Brake.performed += instance.OnBrake;
             @Brake.canceled += instance.OnBrake;
+            @Drift.started += instance.OnDrift;
+            @Drift.performed += instance.OnDrift;
+            @Drift.canceled += instance.OnDrift;
+            @Rotation.started += instance.OnRotation;
+            @Rotation.performed += instance.OnRotation;
+            @Rotation.canceled += instance.OnRotation;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
+            @SpecialFN.started += instance.OnSpecialFN;
+            @SpecialFN.performed += instance.OnSpecialFN;
+            @SpecialFN.canceled += instance.OnSpecialFN;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -221,6 +325,18 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
             @Brake.started -= instance.OnBrake;
             @Brake.performed -= instance.OnBrake;
             @Brake.canceled -= instance.OnBrake;
+            @Drift.started -= instance.OnDrift;
+            @Drift.performed -= instance.OnDrift;
+            @Drift.canceled -= instance.OnDrift;
+            @Rotation.started -= instance.OnRotation;
+            @Rotation.performed -= instance.OnRotation;
+            @Rotation.canceled -= instance.OnRotation;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
+            @SpecialFN.started -= instance.OnSpecialFN;
+            @SpecialFN.performed -= instance.OnSpecialFN;
+            @SpecialFN.canceled -= instance.OnSpecialFN;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -242,5 +358,9 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnBrake(InputAction.CallbackContext context);
+        void OnDrift(InputAction.CallbackContext context);
+        void OnRotation(InputAction.CallbackContext context);
+        void OnFire(InputAction.CallbackContext context);
+        void OnSpecialFN(InputAction.CallbackContext context);
     }
 }

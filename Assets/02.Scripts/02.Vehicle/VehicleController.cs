@@ -32,6 +32,7 @@ public class VehicleController : MonoBehaviour
         _isBraking = brake;
     }
 
+    
     private void FixedUpdate()
     {
         float accel = _moveInput.y * 0.5f;
@@ -48,7 +49,11 @@ public class VehicleController : MonoBehaviour
         }
         if(steering != 0)
         {
-            _wheel.Steer(steering);
+            _wheel.Steer(_smoothSteering);
+        }
+        else
+        {
+            _wheel.ResetSteering();
         }
         
     }

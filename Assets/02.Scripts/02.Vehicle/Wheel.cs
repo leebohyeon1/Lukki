@@ -21,7 +21,7 @@ public class Wheel : MonoBehaviour
     [SerializeField] private WheelCollider _rearRightWheel;
 
     [FoldoutGroup("휠 세팅")]
-    [SerializeField] private float _maxSteeringAngle = 40f;
+    [SerializeField] private float _maxSteeringAngle =20f;
 
 
     private Rigidbody _rb;
@@ -31,11 +31,22 @@ public class Wheel : MonoBehaviour
     }
     public void Steer(float input)
     {
-        float speedFactor = Mathf.Clamp(_rb.velocity.magnitude / 50f, 0.6f, 1f);
-        float steerAngle = _maxSteeringAngle * input * speedFactor;
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position,-transform.up,out hit,2f))
+        {
+            Vector3 groundNormal= hit.normal;
+            float slopeAngle = Vector3.Angle(groundNormal, Vector3.up);
 
-        _frontLeftWheel.steerAngle = steerAngle;
-        _frontRightWheel.steerAngle = steerAngle;
+
+            float speedFactor = Mathf.Clamp(1 - (_rb.velocity.magnitude / 80f), 0.3f, 1f);
+            float slopeFactor = Mathf.Clamp(1 - (slopeAngle / 45f), 0.5f, 1f);
+
+            float steerAngle = _maxSteeringAngle * input * speedFactor;
+
+            _frontLeftWheel.steerAngle = steerAngle;
+            _frontRightWheel.steerAngle = steerAngle;
+        }
+        
     }
 
     public void ResetSteering()
@@ -46,6 +57,15 @@ public class Wheel : MonoBehaviour
 
     public void AdjustSuspension()
     {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -transform.up, out hit, 2f))
+        {
+            // 바퀴가 지형을 따라가도록 조정
+            Vector3 groundNormal = hit.normal;
+            Quaternion groundRotation = Quaternion.FromToRotation(transform.up, groundNormal);
+            transform.rotation = Quaternion.Lerp(transform.rotation, groundRotation * transform.rotation, Time.fixedDeltaTime * 5f);
+        }
+
         JointSpring spring = new JointSpring
         {
             spring = 35000f,
@@ -57,22 +77,5 @@ public class Wheel : MonoBehaviour
         _frontRightWheel.suspensionSpring = spring;
         _rearLeftWheel.suspensionSpring = spring;
         _rearRightWheel.suspensionSpring = spring;
-    }
-
-    public void AdjustFriction()
-    {
-        WheelFrictionCurve forwardFriction = _frontLeftWheel.forwardFriction;
-        forwardFriction.stiffness = 1.8f;
-        _frontLeftWheel.forwardFriction = forwardFriction;
-        _frontRightWheel.forwardFriction = forwardFriction;
-        _rearLeftWheel.forwardFriction = forwardFriction;
-        _rearRightWheel.forwardFriction = forwardFriction;
-
-        WheelFrictionCurve sidewaysFriction = _frontLeftWheel.sidewaysFriction;
-        sidewaysFriction.stiffness = 1.7f; //
-        _frontLeftWheel.sidewaysFriction = sidewaysFriction;
-        _frontRightWheel.sidewaysFriction = sidewaysFriction;
-        _rearLeftWheel.sidewaysFriction = sidewaysFriction;
-        _rearRightWheel.sidewaysFriction = sidewaysFriction;
     }
 }

@@ -61,4 +61,9 @@ public class VehicleController : MonoBehaviour
         }
     }
 
+    private bool IsGrounded()
+    {
+        return Physics.
+    }
+
 }

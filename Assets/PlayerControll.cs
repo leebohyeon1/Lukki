@@ -55,10 +55,10 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Rotation"",
+                    ""name"": ""Look"",
                     ""type"": ""PassThrough"",
                     ""id"": ""1f053463-f2c8-4ee1-abac-9876b0e039c1"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -163,11 +163,11 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""071aed39-b16a-45a6-a3e1-4585acefe7bb"",
-                    ""path"": """",
+                    ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Rotation"",
+                    ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -203,7 +203,7 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Brake = m_Player.FindAction("Brake", throwIfNotFound: true);
         m_Player_Drift = m_Player.FindAction("Drift", throwIfNotFound: true);
-        m_Player_Rotation = m_Player.FindAction("Rotation", throwIfNotFound: true);
+        m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_SpecialFN = m_Player.FindAction("SpecialFN", throwIfNotFound: true);
     }
@@ -275,7 +275,7 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Brake;
     private readonly InputAction m_Player_Drift;
-    private readonly InputAction m_Player_Rotation;
+    private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_SpecialFN;
     public struct PlayerActions
@@ -285,7 +285,7 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Brake => m_Wrapper.m_Player_Brake;
         public InputAction @Drift => m_Wrapper.m_Player_Drift;
-        public InputAction @Rotation => m_Wrapper.m_Player_Rotation;
+        public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @SpecialFN => m_Wrapper.m_Player_SpecialFN;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -306,9 +306,9 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
             @Drift.started += instance.OnDrift;
             @Drift.performed += instance.OnDrift;
             @Drift.canceled += instance.OnDrift;
-            @Rotation.started += instance.OnRotation;
-            @Rotation.performed += instance.OnRotation;
-            @Rotation.canceled += instance.OnRotation;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
             @Fire.started += instance.OnFire;
             @Fire.performed += instance.OnFire;
             @Fire.canceled += instance.OnFire;
@@ -328,9 +328,9 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
             @Drift.started -= instance.OnDrift;
             @Drift.performed -= instance.OnDrift;
             @Drift.canceled -= instance.OnDrift;
-            @Rotation.started -= instance.OnRotation;
-            @Rotation.performed -= instance.OnRotation;
-            @Rotation.canceled -= instance.OnRotation;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
             @Fire.started -= instance.OnFire;
             @Fire.performed -= instance.OnFire;
             @Fire.canceled -= instance.OnFire;
@@ -359,7 +359,7 @@ public partial class @PlayerControll: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnBrake(InputAction.CallbackContext context);
         void OnDrift(InputAction.CallbackContext context);
-        void OnRotation(InputAction.CallbackContext context);
+        void OnLook(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnSpecialFN(InputAction.CallbackContext context);
     }

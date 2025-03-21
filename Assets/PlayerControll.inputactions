@@ -33,10 +33,10 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Rotation",
+                    "name": "Look",
                     "type": "PassThrough",
                     "id": "1f053463-f2c8-4ee1-abac-9876b0e039c1",
-                    "expectedControlType": "",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -141,11 +141,11 @@
                 {
                     "name": "",
                     "id": "071aed39-b16a-45a6-a3e1-4585acefe7bb",
-                    "path": "",
+                    "path": "<Mouse>/delta",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotation",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

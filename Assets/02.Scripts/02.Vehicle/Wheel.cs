@@ -21,7 +21,9 @@ public class Wheel : MonoBehaviour
     [SerializeField] private WheelCollider _rearRightWheel;
 
     [FoldoutGroup("휠 세팅")]
-    [SerializeField] private float _maxSteeringAngle =20f;
+    [SerializeField] private float _maxSteeringAngle =25f; // 최대조향각
+    [FoldoutGroup("휠 세팅")]
+    [SerializeField] private float _steeringDamping = 3f; //조향 복귀 감속 조절
 
 
     private Rigidbody _rb;
@@ -31,51 +33,38 @@ public class Wheel : MonoBehaviour
     }
     public void Steer(float input)
     {
-        RaycastHit hit;
-        if(Physics.Raycast(transform.position,-transform.up,out hit,2f))
+        float steerAngle = _maxSteeringAngle * input; // 기본 조향각 설정
+
+        float directionFactor = Vector3.Dot(_rb.velocity.normalized, transform.forward); //차량 진행방향 감지 (전진/후진)
+
+
+        if(Mathf.Abs(directionFactor) < -0.1f && Mathf.Abs(input) <0.01f)
         {
-            Vector3 groundNormal= hit.normal;
-            float slopeAngle = Vector3.Angle(groundNormal, Vector3.up);
+            ResetSteering();
+            return;
+        }
 
+        float speedFactor = Mathf.Clamp(1 - (_rb.velocity.magnitude / 100f), 0.7f, 1f);
+        steerAngle *= speedFactor;
 
-            float speedFactor = Mathf.Clamp(1 - (_rb.velocity.magnitude / 80f), 0.3f, 1f);
-            float slopeFactor = Mathf.Clamp(1 - (slopeAngle / 45f), 0.5f, 1f);
-
-            float steerAngle = _maxSteeringAngle * input * speedFactor;
+        if(Mathf.Abs(input) < 0.01f)
+        {
+            _frontLeftWheel.steerAngle = Mathf.Lerp(_frontLeftWheel.steerAngle, 0, Time.fixedDeltaTime * _steeringDamping);
+            _frontRightWheel.steerAngle = Mathf.Lerp(_frontRightWheel.steerAngle, 0, Time.fixedDeltaTime * _steeringDamping);
+        }
+       
 
             _frontLeftWheel.steerAngle = steerAngle;
             _frontRightWheel.steerAngle = steerAngle;
-        }
+        
         
     }
 
     public void ResetSteering()
     {
-        _frontLeftWheel.steerAngle = Mathf.Lerp(_frontLeftWheel.steerAngle, 0, Time.fixedDeltaTime * 5f);
-        _frontRightWheel.steerAngle = Mathf.Lerp(_frontRightWheel.steerAngle, 0, Time.fixedDeltaTime * 5f);
+        _frontLeftWheel.steerAngle = Mathf.Lerp(_frontLeftWheel.steerAngle, 0, Time.fixedDeltaTime * _steeringDamping);
+        _frontRightWheel.steerAngle = Mathf.Lerp(_frontRightWheel.steerAngle, 0, Time.fixedDeltaTime * _steeringDamping);
     }
 
-    public void AdjustSuspension()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, -transform.up, out hit, 2f))
-        {
-            // 바퀴가 지형을 따라가도록 조정
-            Vector3 groundNormal = hit.normal;
-            Quaternion groundRotation = Quaternion.FromToRotation(transform.up, groundNormal);
-            transform.rotation = Quaternion.Lerp(transform.rotation, groundRotation * transform.rotation, Time.fixedDeltaTime * 5f);
-        }
-
-        JointSpring spring = new JointSpring
-        {
-            spring = 35000f,
-            damper = 4500f,
-            targetPosition = 0.5f
-        };
-
-        _frontLeftWheel.suspensionSpring = spring;
-        _frontRightWheel.suspensionSpring = spring;
-        _rearLeftWheel.suspensionSpring = spring;
-        _rearRightWheel.suspensionSpring = spring;
-    }
+    
 }

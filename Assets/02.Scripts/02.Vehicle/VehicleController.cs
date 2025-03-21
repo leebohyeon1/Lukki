@@ -28,6 +28,7 @@ public class VehicleController : MonoBehaviour
         }
 
         _rb.centerOfMass = new Vector3(0, -1.5f, 0); // 차량의 안정성을 위해서 무게중심을 낮춤 필요시  Y값 변경
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void SetInput(Vector2 input, bool brake)
@@ -59,11 +60,33 @@ public class VehicleController : MonoBehaviour
         {
             _wheel.ResetSteering();
         }
+        ApplyGroundAlignment();
+        ApplyGravityControl();
+    }
+
+    private void ApplyGroundAlignment()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -transform.up, out hit, 2f))
+        {
+            Vector3 groundNormal = hit.normal;
+            Quaternion groundRotation = Quaternion.FromToRotation(transform.up, groundNormal);
+            transform.rotation = Quaternion.Lerp(transform.rotation, groundRotation * transform.rotation, Time.fixedDeltaTime * 5f);
+        }
+    }
+
+    private void ApplyGravityControl()
+    {
+        if (!IsGrounded())
+        {
+            _rb.AddForce(Vector3.down * 60f, ForceMode.Acceleration);
+            _rb.AddTorque(transform.right * 5f, ForceMode.Acceleration);
+        }
     }
 
     private bool IsGrounded()
     {
-        return Physics.
+        return Physics.Raycast(transform.position, -Vector3.up, 2.5f);
     }
 
 }

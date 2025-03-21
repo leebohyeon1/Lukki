@@ -15,10 +15,11 @@ public class InputManager : MonoBehaviour
     [SerializeField] private Vector2 _moveInput;
     [FoldoutGroup("InputValues"), ReadOnly]
     [SerializeField] private bool _isBraking;
-
-    public Vector2 MoveInput => _moveInput;
-
+    [FoldoutGroup("InputValues"), ReadOnly]
+    [SerializeField] private Vector2 _lookInput;
     
+    public Vector2 MoveInput => _moveInput;
+    public Vector2 LookInput => _lookInput;
     public bool IsBraking => _isBraking;
 
     private void Awake()
@@ -29,6 +30,9 @@ public class InputManager : MonoBehaviour
 
         _controls.Player.Brake.performed += ctx => _isBraking = true;
         _controls.Player.Brake.canceled += ctx => _isBraking = false;
+
+        _controls.Player.Look.performed += ctx => _lookInput = ctx.ReadValue<Vector2>();
+        _controls.Player.Look.canceled += ctx => _lookInput = Vector2.zero;
     }
 
     private void OnEnable() => _controls.Enable();

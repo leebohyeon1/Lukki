@@ -24,7 +24,7 @@ public class Player : Character
 
         _moveInput = _inputManager.MoveInput;
         _isBraking = _inputManager.IsBraking;
-        _vehicleController.SetInput(_inputManager.MoveInput, _inputManager.IsBraking);
+        _vehicleController.SetInput(_moveInput, _isBraking);
 
     }
     [Button]
